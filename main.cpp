@@ -1,20 +1,24 @@
-
 #include <SFML/Graphics/RenderWindow.hpp> // sf::RenderWindow, sf::VideoMode for constructor of former
 #include <SFML/Window/Event.hpp> // sf::Event
 #include <array> // std::array
-#include <iostream> // std::cout 
+#include <iostream> // std::cout
 
-#include "Letter.h"
+#include "letter.hpp"
 
 int main() {
-
 	const Pt pt0(0.0f, 0.0f);
-	const Pt pt1(50.0f, 400.0f);
-	
-	sf::VertexArray va(sf::Points, 100);
-	drawLn(va, 0, PtPair(pt0, pt1));
+	const Pt pt1(100.0f, 500.0f);
 
-	sf::RenderWindow window(sf::VideoMode(400, 400), "test");
+	SlopeHelper helper = normSlope(PtPair(pt0, pt1));
+
+	std::cout << "slope: " << helper.slope.y << " / " << helper.slope.x << '\n';
+	std::cout << "vertices needed: " << helper.verticesNeeded;
+
+	sf::VertexArray va(sf::Points, 0);
+	drawLn(va, 0, Pt(0.0f, 0.0f), PtPair(pt0, pt1));
+	// 800 x 800
+	sf::RenderWindow window(sf::VideoMode(800, 800), "test");
+	window.setFramerateLimit(60);
 	while (window.isOpen()) {
 		// event
 		sf::Event event;
@@ -31,6 +35,6 @@ int main() {
 		window.draw(va);
 		window.display();
 	}
-	
+
 	return 0;
 }
