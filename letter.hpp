@@ -1,28 +1,29 @@
-/*
- * letter.hpp
- *
- *  Created on: Aug 5, 2022
- *      Author: emily
- */
-
-#ifndef LETTER_HPP_
-#define LETTER_HPP_
+#ifndef LETTER_HPP
+#define LETTER_HPP
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp> // sf::Vector2f
 #include <array>
 #include <utility> // std::pair
+#include <iostream>
+#include <memory>
 
 using Pt = sf::Vector2f;
 using PtPair = std::pair<Pt, Pt>;
 
 struct Letter {
-	std::array<PtPair, 5> ptPairs;
+	std::array<std::unique_ptr<PtPair>, 4> ptPairs;
 	Pt origin;
+	// pass by value so letter manages itself
+	Letter(const Pt& origin, const std::array<PtPair, 4>& pairs);
+	~Letter();
 };
 
+void drawLetter(sf::VertexArray&, std::size_t start, const Letter& letter);
 
-void drawLetter(sf::VertexArray&, std::size_t, const Letter&);
+std::ostream& operator<<(std::ostream&, const Pt&);
+std::ostream& operator<<(std::ostream&, const PtPair&);
+std::ostream& operator<<(std::ostream&, const Letter&);
 
 // anything beyond here exists SOLELY for testing purposes
 
@@ -33,14 +34,6 @@ struct SlopeHelper {
 
 SlopeHelper normSlope(const PtPair& pair);
 
-float xDist(const Pt& first, const Pt& second);
-float xDist(const PtPair& pair);
+void drawLn(sf::VertexArray& va, std::size_t start, const Pt& offset, const PtPair& pair);
 
-float slope(const Pt& first, const Pt& second);
-float slope(const PtPair& pair);
-
-void drawLn(sf::VertexArray&, std::size_t, const Pt& offset, const PtPair& pair);
-
-
-
-#endif /* LETTER_HPP_ */
+#endif 
