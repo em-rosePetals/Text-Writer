@@ -2,36 +2,26 @@
 #include <SFML/Window/Event.hpp> // sf::Event
 #include <array> // std::array
 #include <iostream> // std::cout
+#include <cctype>
 
 #include "letter.hpp"
 
+void drawString(sf::VertexArray& va, const std::string& str);
+//void sanitize(std::string& str);
+
+const int windowW = 1000;
+const int windowH = 1000;
+
+const int letterW = 110;
+const int letterH = 110;
+
 int main() {
-	/*
-	const Pt pt0(0.0f, 0.0f);
-	const Pt pt1(100.0f, 500.0f);
-
-	SlopeHelper helper = normSlope(PtPair(pt0, pt1));
-
-	std::cout << "slope: " << helper.slope.y << " / " << helper.slope.x << '\n';
-	std::cout << "vertices needed: " << helper.verticesNeeded;
-
 	sf::VertexArray va(sf::Points, 0);
-	drawLn(va, 0, Pt(100.0f, 100.0f), PtPair(pt0, pt1));
-	*/
-	const Pt pt0(100.0f, 100.0f);
-	const Pt pt1(75.0f, 0.0f);
-	const Pt pt2(0.0f, 50.0f);
-	const Pt pt3(75.0f, 100.0f);
-	const Pt pt4(100.0f, 0.0f);
-
-	Letter l(Pt(0, 0), std::array<PtPair, 4>{PtPair(pt0, pt1), PtPair(pt1, pt2), PtPair(pt2, pt3), PtPair(pt3, pt4)});
-	std::cout << l;
-	sf::VertexArray va(sf::Points, 100);
-	drawLetter(va, 0, l);
-	
+	drawString(va, "hi\noak");
+	std::size_t index = 0;
 	// 800 x 800
-	sf::RenderWindow window(sf::VideoMode(800, 800), "test");
-	window.setFramerateLimit(60);
+	sf::RenderWindow window(sf::VideoMode(windowW, windowH), "test");
+	window.setFramerateLimit(300);
 	while (window.isOpen()) {
 		// event
 		sf::Event event;
@@ -45,9 +35,32 @@ int main() {
 		}
 		// everything goes blank
 		window.clear();
+		va[index].color = sf::Color::White;
 		window.draw(va);
 		window.display();
+		// needs to not hit the vtx count
+		if (index < va.getVertexCount() - 1) { ++index; }
 	}
-	
 	return 0;
+}
+void drawString(sf::VertexArray& va, const std::string& str) {
+	int xOff = 0;
+	int yOff = 0;
+	for (std::size_t i = 0; i < str.size(); ++i) {
+		if (str[i] == ' ') {
+			xOff += letterW;
+			continue;
+		} else if (str[i] == '\n') {
+			yOff += letterW;
+			xOff = 0;
+			continue;
+		}
+		drawLetter(va, 0, letters::byChar(str[i]), Pt(static_cast<float>(xOff), static_cast<float>(yOff)));
+		xOff += letterW;
+		if (xOff > windowW - letterW) {
+			yOff += letterW;
+		}
+		xOff %= windowW - letterW;
+		
+	}
 }
