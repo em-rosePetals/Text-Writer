@@ -9,7 +9,7 @@
 void drawString(sf::VertexArray& va, const std::string& str);
 //void sanitize(std::string& str);
 
-const int windowW = 1000;
+const int windowW = 1200;
 const int windowH = 1000;
 
 const int letterW = 110;
@@ -17,7 +17,7 @@ const int letterH = 110;
 
 int main() {
 	sf::VertexArray va(sf::Points, 0);
-	drawString(va, "hi\noak");
+	drawString(va, "hi tori\nand mercer\nand tt");
 	std::size_t index = 0;
 	// 800 x 800
 	sf::RenderWindow window(sf::VideoMode(windowW, windowH), "test");
@@ -44,7 +44,8 @@ int main() {
 	return 0;
 }
 void drawString(sf::VertexArray& va, const std::string& str) {
-	int xOff = 0;
+	const int xReset = 20;
+	int xOff = xReset;
 	int yOff = 0;
 	for (std::size_t i = 0; i < str.size(); ++i) {
 		if (str[i] == ' ') {
@@ -52,7 +53,7 @@ void drawString(sf::VertexArray& va, const std::string& str) {
 			continue;
 		} else if (str[i] == '\n') {
 			yOff += letterW;
-			xOff = 0;
+			xOff = xReset;
 			continue;
 		}
 		drawLetter(va, 0, letters::byChar(str[i]), Pt(static_cast<float>(xOff), static_cast<float>(yOff)));
