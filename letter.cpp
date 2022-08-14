@@ -1,7 +1,7 @@
-#include <unordered_map> // 
-#include <cmath> // max, abs
-#include "letter.hpp" /* also includes: 
-					   * SFML/Graphics/VertexArray.hpp, 
+#include <unordered_map> // std::unordered_map
+#include <cmath> // std::max, abs
+#include "letter.hpp" /* also includes:
+					   * SFML/Graphics/VertexArray.hpp,
 					   * SFML/System/Vector2.hpp,
 					   * array,
 					   * utility,
@@ -9,14 +9,15 @@
 					   * memory
 					   */
 /*
-* contains a vector representing slope, along with the vertices needed to draw the line properly
+* contains a vector representing slope, along with the vertices needed to draw
+*  the line properly
 */
 struct SlopeHelper {
 	sf::Vector2f slope;
 	std::size_t verticesNeeded;
 	SlopeHelper(const sf::Vector2f& slp, std::size_t vtxsNeeded);
 };
-// a few useful headers 
+// a few useful headers
 void drawLn(sf::VertexArray& va, std::size_t start, const Pt& offset, const PtPair& pair);
 SlopeHelper normSlope(const PtPair& pair);
 void resizeIfNeeded(sf::VertexArray& va, std::size_t start, std::size_t vtxCount);
@@ -24,8 +25,9 @@ void resizeIfNeeded(sf::VertexArray& va, std::size_t start, std::size_t vtxCount
 * takes in a character, outputs the corresponding Letter
 */
 const Letter& letters::byChar(char c) {
+	// maps chars to their corresponding representation
 	const std::unordered_map<char, const Letter&> lmap = {
-		{'a', letters::A}, {'b', letters::B}, {'c', letters::C}, 
+		{'a', letters::A}, {'b', letters::B}, {'c', letters::C},
 		{'d', letters::D}, {'e', letters::E}, {'f', letters::F},
 		{'g', letters::G}, {'h', letters::H}, {'i', letters::I},
 		{'j', letters::J}, {'k', letters::K}, {'l', letters::L},
@@ -33,21 +35,18 @@ const Letter& letters::byChar(char c) {
 		{'p', letters::P}, {'q', letters::Q}, {'r', letters::R},
 		{'s', letters::S}, {'t', letters::T}, {'u', letters::U},
 		{'v', letters::V}, {'w', letters::W}, {'x', letters::X},
-		{'y', letters::Y}, {'z', letters::Z}
+		{'y', letters::Y}, {'z', letters::Z}, {'!', letters::EXCL},
+		{' ', letters::SPACE}, {'?', letters::INVAL}
 	};
 	return lmap.at(c);
 }
 /*
-* takes in an index of the alphabet and outputs the corresponding Letter
-*/
-const Letter& letters::byIndex(std::size_t i) {
-	return byChar(static_cast<char>(i) + 'a');
-}
-/*
 * draws a given letter onto the given vertex array, starting at start
 */
-void drawLetter(sf::VertexArray& va, std::size_t start, const Letter& letter, const Pt& offset) {
+void drawLetter(sf::VertexArray& va, std::size_t start, const Letter& letter,
+		const Pt& offset) {
 	for (std::size_t i = 0; i < letter.ptPairs.size(); ++i) {
+		// draws a line between the point pair, starting at the offset
 		drawLn(va, va.getVertexCount(), offset, *letter.ptPairs[i]);
 	}
 }
@@ -73,16 +72,8 @@ void drawLn(sf::VertexArray& va, std::size_t start, const Pt& offset, const PtPa
 */
 Letter::Letter(const std::array<PtPair, 4>& pairs) {
 	for (std::size_t i = 0; i < pairs.size(); ++i) {
-		// makes unique pointers from the stuff in the input array
-		this->ptPairs[i] = std::move(std::make_unique<PtPair>(pairs[i]));
-	}
-}
-/*
-* destructs a letter, deletes all the unique ptrs
-*/
-Letter::~Letter() {
-	for (std::size_t i = 0; i < ptPairs.size(); ++i) {
-		ptPairs[i].reset();
+		// copies the stuff from the input array
+		this->ptPairs[i] = std::make_unique<PtPair>(pairs[i]);
 	}
 }
 /*
@@ -125,18 +116,18 @@ sf::Vector2f nonNormSlope(const PtPair& pair) {
 	return sf::Vector2f(run, rise);
 }
 /*
-* returns a normalized vector representing slope, 
+* returns a normalized vector representing slope,
 * along with helpful counter for num vertices needed
 */
 SlopeHelper normSlope(const PtPair& pair) {
+	// vector representing change in x and y
 	sf::Vector2f slope = nonNormSlope(pair);
-	// gets the slope numbers <= 1
+	// the larger absolute value of x and y
 	float normalizer = std::max(abs(slope.x), abs(slope.y));
-	// normalizes it
+	// normalizes the slope
 	slope /= normalizer;
-	// constructs a slope helper with the stuff
-	SlopeHelper slopeHelp(slope, abs(static_cast<int>(normalizer)) );
-	return slopeHelp;
+	// constructs a slope helper with all the necessary info
+	return SlopeHelper(slope, static_cast<int>(normalizer));
 }
 /*
 * if required amount of vertices is greater than current length, resize
