@@ -20,7 +20,7 @@ int main() {
 	// vertex array to be interpreted as points, starting with capacity 0
 	sf::VertexArray va(sf::Points, 0);
 	// draw the string onto the vertex array
-	drawString(va, "happy\nbirthday\nmiles!!!!\nhope your had a wonderful year\nand heres to many more!");
+	drawString(va, "try changing me!");
 	// index of the point to be revealed
 	std::size_t index = 0;
 	// makes a window to be drawn onto
